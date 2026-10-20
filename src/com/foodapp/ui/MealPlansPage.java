@@ -24,7 +24,7 @@ public class MealPlansPage extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        add(UIStyle.header("Choose Your Meal Plan"), BorderLayout.NORTH);
+        add(UIStyle.headerWithProfile("Choose Your Meal Plan", this, customerName), BorderLayout.NORTH);
 
         // Top bar: back + filter
         JButton back = new JButton("< Home");

@@ -12,7 +12,7 @@ public class HomePage extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        add(UIStyle.header("Meal Plan & Meal Kit Delivery"), BorderLayout.NORTH);
+        add(UIStyle.headerWithProfile("Meal Plan & Meal Kit Delivery", this, customerName), BorderLayout.NORTH);
 
         JPanel center = new JPanel();
         center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));

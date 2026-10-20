@@ -1,5 +1,7 @@
 package com.foodapp.ui;
 
+import com.foodapp.auth.AuthService;
+import com.foodapp.auth.Customer;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
@@ -267,15 +269,126 @@ public final class UIStyle {
 
     /**
      * Backward-compatible header panel generator with title text.
+     * Automatically includes a profile button in the top right.
      */
     public static JPanel header(String text) {
-        JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 15));
+        Customer c = AuthService.getCurrentUser();
+        String name = (c != null) ? c.getName() : "Profile";
+        return headerWithProfile(text, null, name);
+    }
+
+    /**
+     * Creates a modern header with title on the left and a profile icon button on the top right.
+     *
+     * @param text         Header title string
+     * @param currentFrame Current JFrame window (disposed on navigation, or null to auto-detect)
+     * @param customerName Customer name to display on profile button
+     * @return Styled JPanel header
+     */
+    public static JPanel headerWithProfile(String text, JFrame currentFrame, String customerName) {
+        JPanel p = new JPanel(new BorderLayout());
         p.setBackground(PRIMARY);
+        p.setBorder(BorderFactory.createEmptyBorder(12, 20, 12, 20));
+
         JLabel l = new JLabel(text);
         l.setFont(TITLE);
         l.setForeground(Color.WHITE);
-        p.add(l);
+        p.add(l, BorderLayout.WEST);
+
+        String displayName = customerName;
+        if (displayName == null || displayName.trim().isEmpty()) {
+            Customer c = AuthService.getCurrentUser();
+            if (c != null) displayName = c.getName();
+        }
+        if (displayName == null || displayName.trim().isEmpty()) {
+            displayName = "Profile";
+        }
+
+        JButton profileBtn = createProfileButton(displayName);
+        final String finalName = displayName;
+        profileBtn.addActionListener(e -> {
+            Window parent = (currentFrame != null) ? currentFrame : SwingUtilities.getWindowAncestor(profileBtn);
+            if (parent != null) {
+                parent.dispose();
+            }
+            new ProfilePage(finalName).setVisible(true);
+        });
+
+        p.add(profileBtn, BorderLayout.EAST);
         return p;
+    }
+
+    /**
+     * Creates a styled profile pill button with a vector user avatar icon.
+     */
+    public static JButton createProfileButton(String displayName) {
+        String shortName = displayName.contains(" ") ? displayName.split(" ")[0] : displayName;
+        JButton btn = new JButton(" " + shortName, new ProfileAvatarIcon(24));
+        btn.setFont(new Font(detectSystemSafeFont(), Font.BOLD, 13));
+        btn.setForeground(Color.WHITE);
+        btn.setBackground(new Color(255, 255, 255, 45));
+        btn.setFocusPainted(false);
+        btn.setBorderPainted(false);
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btn.setToolTipText("View Profile Details (" + displayName + ")");
+
+        btn.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(255, 255, 255, 160), 1, true),
+                BorderFactory.createEmptyBorder(6, 12, 6, 12)
+        ));
+
+        btn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                btn.setBackground(new Color(255, 255, 255, 80));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                btn.setBackground(new Color(255, 255, 255, 45));
+            }
+        });
+
+        return btn;
+    }
+
+    /**
+     * Vector-drawn circular user profile icon.
+     */
+    public static class ProfileAvatarIcon implements Icon {
+        private final int size;
+
+        public ProfileAvatarIcon(int size) {
+            this.size = size;
+        }
+
+        @Override
+        public void paintIcon(Component c, Graphics g, int x, int y) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            // Circular white badge
+            g2.setColor(new Color(255, 255, 255, 230));
+            g2.fillOval(x, y, size, size);
+
+            // User silhouette in primary color
+            g2.setColor(PRIMARY);
+            int headSize = (int) (size * 0.38);
+            int headX = x + (size - headSize) / 2;
+            int headY = y + (int) (size * 0.18);
+            g2.fillOval(headX, headY, headSize, headSize);
+
+            int bodyW = (int) (size * 0.72);
+            int bodyH = (int) (size * 0.55);
+            int bodyX = x + (size - bodyW) / 2;
+            int bodyY = y + (int) (size * 0.58);
+            g2.fillArc(bodyX, bodyY, bodyW, bodyH, 0, 180);
+
+            g2.dispose();
+        }
+
+        @Override public int getIconWidth() { return size; }
+        @Override public int getIconHeight() { return size; }
     }
 
     /**
