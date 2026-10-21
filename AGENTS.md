@@ -51,7 +51,8 @@
 - [x] `HomePage` Swing UI — welcome screen with "Browse Meal Plans" and "My Orders" buttons
 - [x] `MealPlansPage` Swing UI — grid of plan cards with type filter dropdown
 - [x] `MealPlanDetailsPage` Swing UI — plan summary + food items table + "Select & Customize" button
-- [x] `UIStyle` — shared theme (green primary, fonts, header/button factories)
+- [x] `ProfilePage` Swing UI — user avatar, account info, subscription status, back & logout actions
+- [x] `UIStyle` — shared theme (green primary, fonts, FlatLaf setup, header with profile button, button/field/card stylers)
 
 **Pending:**
 - [ ] `MealPlanDetailsPage` → "Select & Customize" button (Person 3 fills this in)
