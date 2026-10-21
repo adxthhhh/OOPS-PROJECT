@@ -32,10 +32,15 @@ public class PaymentResultPage extends JFrame {
         info.setMargin(new Insets(10, 20, 10, 20));
         add(info, BorderLayout.CENTER);
 
-        JButton btn = new JButton(ok ? "Done" : "Try Again");
+        JButton btn = new JButton(ok ? "View My Orders" : "Try Again");
         btn.addActionListener(e -> {
-            if (ok) System.exit(0);   // TODO: go to My Orders page (Person 5)
-            else { new PaymentPage(payment.getAmount()); dispose(); }
+            if (ok) {
+                new MyOrdersPage("Customer").setVisible(true);
+                dispose();
+            } else {
+                new PaymentPage(payment.getAmount());
+                dispose();
+            }
         });
         add(btn, BorderLayout.SOUTH);
         setVisible(true);

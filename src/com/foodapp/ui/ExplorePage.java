@@ -320,10 +320,10 @@ public class ExplorePage extends JFrame {
 
         // My Orders (Person 5 hook)
         JButton myOrdersBtn = createNavButton("My Orders", "receipt_long", false);
-        // TODO (Person 5): open the My Orders page here
-        myOrdersBtn.addActionListener(e ->
-                JOptionPane.showMessageDialog(this, "My Orders page - coming from Person 5", "My Orders", JOptionPane.INFORMATION_MESSAGE)
-        );
+        myOrdersBtn.addActionListener(e -> {
+            new MyOrdersPage(customerName).setVisible(true);
+            dispose();
+        });
 
         // My Subscriptions
         JButton subsBtn = createNavButton("My Subscriptions", "autorenew", false);
