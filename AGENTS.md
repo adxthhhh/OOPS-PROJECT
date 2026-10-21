@@ -16,7 +16,7 @@
 | 2 | Person 2 | Meal Plans — Browse & Details | ✅ Complete |
 | 3 | Person 3 | Meal Customization | ✅ Complete |
 | 4 | Person 4 (Adarsh) | Payment Processing | ✅ Complete |
-| 5 | Person 5 | My Orders + Real DB Connection | ⏳ Not started — TODO hooks in `HomePage` & `DBConnection` |
+| 5 | Person 5 | Orders + Real DB Connection + Subscriptions | ✅ Complete |
 
 ---
 
@@ -26,14 +26,12 @@
 **Files:** `src/com/foodapp/auth/`, `src/com/foodapp/ui/LoginPage.java`, `src/com/foodapp/ui/RegisterPage.java`
 
 **What's done:**
-- [x] `Customer` POJO (name, email, phone, password)
-- [x] `AuthService` — in-memory register/login/logout (List-based store)
+- [x] `Customer` POJO (name, email, phone, passwordHash)
+- [x] `AuthService` — BCrypt password hashing + MySQL authentication with automatic offline in-memory fallback
+- [x] `CustomerDAO` — full JDBC implementation for customers table
 - [x] `AuthValidator` — email regex, phone (10 digits), password (min 6 chars), non-empty checks
-- [x] `LoginPage` Swing UI — email + password form, validation, navigates to `HomePage` on success
-- [x] `RegisterPage` Swing UI — 5-field form with full validation
-
-**Pending:**
-- [ ] Replace `AuthService` in-memory store with JDBC calls (Person 5's responsibility)
+- [x] `LoginPage` Swing UI — modern MealFlow branded split layout, validation, navigates to `HomePage` / `ExplorePage` on success
+- [x] `RegisterPage` Swing UI — live password strength meter, terms checkbox, validation
 
 ---
 
@@ -45,8 +43,8 @@
 - [x] `CookedMealPlan` — concrete subclass for ready-to-eat plans
 - [x] `MealKitPlan` — concrete subclass for DIY ingredient kits
 - [x] `FoodItem` — entity with name, description, mealType, price, vegetarian flag
-- [x] `MealPlanDAO` — DB queries with automatic fallback to `SampleData` if MySQL is unreachable
-- [x] `FoodItemDAO` — fetches food items per plan from DB
+- [x] `MealPlanDAO` & `FoodItemDAO` — DB queries with automatic fallback to `SampleData` if MySQL is unreachable
+- [x] `MealPlanService` & `FoodItemService` — business layer for meal plans & items
 - [x] `SampleData` — 4 hardcoded plans (2 Cooked, 2 Meal Kit) for offline demo
 - [x] `ExplorePage` Swing UI — high-fidelity MealFlow Explore dashboard mirroring modern Tailwind design (fixed sidebar with active plan widget, live header with address selector, instant search, notifications, dynamic cart counter, delivery window status, interactive filter chips, curated meal-plan hero banner, 7 meal-type category tiles, 6 high-fidelity dish cards with macros and quantity steppers, schedule recommendations, and featured neighborhood kitchens)
 - [x] `HomePage` Swing UI — extends `ExplorePage` for unified seamless landing experience
@@ -54,10 +52,6 @@
 - [x] `MealPlanDetailsPage` Swing UI — plan summary + food items table + "Select & Customize" button
 - [x] `ProfilePage` Swing UI — user avatar, account info, subscription status, back & logout actions
 - [x] `UIStyle` — shared theme (green primary, fonts, FlatLaf setup, header with profile button, button/field/card stylers)
-
-**Pending:**
-- [ ] `MealPlanDetailsPage` → "Select & Customize" button (Person 3 fills this in)
-- [ ] `HomePage` → "My Orders" button (Person 5 fills this in)
 
 ---
 
@@ -73,13 +67,7 @@
 - [x] Live order summary (base price + extra qty cost → total)
 - [x] Special Instructions free-text area
 - [x] Confirmation dialog before proceeding to `PaymentPage`
-- [x] Wired into `MealPlanDetailsPage` — "Select & Customize" button now launches the page
-
-**OOP Concepts demonstrated:**
-- Encapsulation via inner `ItemRow` class
-- Polymorphism via `MealPlan` abstract hierarchy
-- Composition of reusable UI helpers
-- Event-driven programming (listeners refresh summary in real time)
+- [x] Wired into `MealPlanDetailsPage` — "Select & Customize" button launches the page
 
 ---
 
@@ -92,31 +80,26 @@
 - [x] `CardPayment` — validates 16-digit card number, MM/YY expiry, 3-digit CVV
 - [x] `WalletPayment` — checks balance sufficiency before deducting
 - [x] `CODPayment` — validates delivery address is non-empty
+- [x] `PaymentDAO` & `PaymentService` — persistent payment records and transaction state
 - [x] `PaymentPage` Swing UI — radio-button method selector with `CardLayout` detail panels
-- [x] `PaymentResultPage` Swing UI — displays SUCCESS (green) or FAILED (red) with transaction ID
+- [x] `PaymentResultPage` Swing UI — displays SUCCESS (green) or FAILED (red) with transaction ID, wired to My Orders
 - [x] `PaymentTest` — CLI test runner covering valid + invalid inputs for all 4 methods
-
-**Pending:**
-- [ ] `PaymentResultPage` → "Done" button currently does `System.exit(0)`; Person 5 should wire it to "My Orders"
 
 ---
 
-### ⏳ Person 5 — Orders & Database Module
-**Files:** `src/com/foodapp/util/DBConnection.java` *(placeholder exists)*
+### ✅ Person 5 — Orders, Subscriptions & Database Module
+**Files:** `src/com/foodapp/order/`, `src/com/foodapp/subscription/`, `src/com/foodapp/util/DBConnection.java`, `src/com/foodapp/ui/MyOrdersPage.java`, `sql/`
 
-**What's needed:**
-- [ ] Replace `DBConnection.java` with real MySQL credentials/connection pool
-- [ ] Create a `MyOrdersPage` Swing UI
-- [ ] Hook into `HomePage.java` at the marked TODO:
-  ```java
-  // TODO (Person 5): open the My Orders page here
-  myOrders.addActionListener(e -> /* open your page here */);
-  ```
-- [ ] Hook into `PaymentResultPage.java`:
-  ```java
-  if (ok) System.exit(0);  // TODO: go to My Orders page (Person 5)
-  ```
-- [ ] Replace `AuthService` in-memory store with JDBC-backed user persistence
+**What's done:**
+- [x] `DBConnection.java` — production-grade connection manager with ping diagnostics, configurable via ENV variables or `db.properties`, and automatic fallback
+- [x] `Order`, `OrderItem`, `OrderStatus`, `OrderStatusHistory` models
+- [x] `OrderDAO`, `OrderItemDAO`, `OrderStatusHistoryDAO` JDBC implementations
+- [x] `OrderService` & `DeliveryTrackingService` business layer
+- [x] `Subscription`, `SubscriptionCalendarEntry`, `SubscriptionStatus` models + DAOs + service
+- [x] `MyOrdersPage` Swing UI — order history cards, items breakdown, status pill badges, live tracking
+- [x] `sql/schema.sql` — 10 normalized tables (InnoDB, utf8mb4) with constraints and indexes
+- [x] `sql/seed.sql` & `sql/migration_v1_to_v2.sql` — seed demo data and migrations
+- [x] `BackendTestSuite.java` — 74 automated unit & integration tests covering all 5 modules
 
 ---
 
@@ -128,7 +111,7 @@
 
 ### Step 1 — Compile (no MySQL needed)
 ```bash
-javac -cp "lib/*" -d out $(find src -name "*.java")
+javac -cp "lib/*:." -d out $(find src -name "*.java")
 ```
 Expected output: *no errors*, and an `out/` folder is created with all `.class` files.
 
@@ -136,11 +119,15 @@ Expected output: *no errors*, and an `out/` folder is created with all `.class` 
 ```bash
 java -cp "lib/*:out" com.foodapp.ui.LoginPage
 ```
-The **Login window** will open immediately with modern FlatLaf styling.
 
-### Step 3 — Run Payment Tests (CLI, no UI)
+### Step 3 — Run Backend Test Suite
 ```bash
-javac -cp "lib/*:out" -d out $(find src test -name "*.java")
+javac -cp "lib/*:out" -d out $(find test -name "*.java")
+java -cp "lib/*:out" com.foodapp.test.BackendTestSuite
+```
+
+### Step 4 — Run Payment Tests (CLI)
+```bash
 java -cp "lib/*:out" com.foodapp.payment.PaymentTest
 ```
 
@@ -150,18 +137,25 @@ java -cp "lib/*:out" com.foodapp.payment.PaymentTest
 
 ```
 [LoginPage]
-  ├─ Enter email + password → click Login
-  │    ├─ Validation errors shown in pop-up dialog
-  │    └─ On success → [HomePage]
+  ├─ Sign in with email + password (BCrypt verified)
+  │    ├─ Validation errors shown in pop-up / inline banner
+  │    └─ On success → [ExplorePage / HomePage]
   │
   └─ Click Register → [RegisterPage]
-       ├─ Fill name, email, phone, password, confirm password
-       ├─ Validation errors shown in pop-up dialog
+       ├─ Fill name, email, phone, password (live strength meter)
+       ├─ Validation & Terms check
        └─ On success → back to [LoginPage]
 
-[HomePage]  (shows "Welcome, <name>!")
+[ExplorePage / HomePage] (MealFlow Dashboard)
+  ├─ Top Bar: Address Selector, Search, Notifications, Cart badge, Profile
+  ├─ Left Sidebar: Navigation tabs (Explore, Meal Plans, My Orders, Subscriptions, Settings)
+  ├─ Hero Banner: Active/Curated meal plan subscription banner
+  ├─ Category Chips: All, Chef's Special, High Protein, Low Carb, Keto, Vegan, Comfort
+  ├─ Dish Cards: Image, macros, veg indicator, price, quantity stepper + Add to Cart
+  ├─ Schedule Timeline & Neighborhood Kitchens
   ├─ "Browse Meal Plans" → [MealPlansPage]
-  └─ "My Orders" → pop-up "coming from Person 5" (placeholder)
+  ├─ "My Orders" tab/button → [MyOrdersPage]
+  └─ Profile button → [ProfilePage]
 
 [MealPlansPage]
   ├─ Filter dropdown: All Plans / Cooked Meals / Meal Kit
@@ -172,19 +166,31 @@ java -cp "lib/*:out" com.foodapp.payment.PaymentTest
   ├─ Plan summary (type, duration, meals/day, price, prepareMeal())
   ├─ Food items table (meal type, name, description, veg/non-veg, price)
   ├─ "< Back to Plans" → [MealPlansPage]
-  └─ "Select & Customize" → pop-up "coming from Person 3" (placeholder)
-       (Person 3 will replace this with PaymentPage / CustomizationPage)
+  └─ "Select & Customize" → [MealCustomizationPage]
 
-[PaymentPage]  (launched with an amount)
-  ├─ Radio buttons: UPI | Card | Wallet | Cash on Delivery
-  ├─ Detail form changes dynamically (CardLayout)
+[MealCustomizationPage]
+  ├─ Filter chips: All / Veg / Non-Veg
+  ├─ Select All / Clear All buttons
+  ├─ Item list with check boxes & serving quantity spinners (1–5)
+  ├─ Special Instructions text box
+  ├─ Order Summary card (base price, extras, total)
+  └─ "Proceed to Payment" → [PaymentPage]
+
+[PaymentPage] (launched with total amount)
+  ├─ Payment method selector: UPI | Card | Wallet | Cash on Delivery
+  ├─ Dynamic CardLayout detail form
   └─ "Pay Rs.<amount>" → validates input → [PaymentResultPage]
 
 [PaymentResultPage]
-  ├─ SUCCESS (green): Method, Amount, Transaction ID, message
-  │    └─ "Done" → exits app (Person 5 will wire to My Orders)
+  ├─ SUCCESS (green): Method, Amount, Transaction ID, confirmation message
+  │    └─ "View Orders" → [MyOrdersPage]
   └─ FAILED (red): Method, Amount, failure reason
        └─ "Try Again" → back to [PaymentPage]
+
+[MyOrdersPage]
+  ├─ Customer order history list
+  ├─ Itemized summary & prices
+  └─ Order status timeline & live delivery tracking
 ```
 
 ---
@@ -194,29 +200,15 @@ java -cp "lib/*:out" com.foodapp.payment.PaymentTest
 1. Start MySQL and run the schema:
    ```bash
    mysql -u root -p < sql/schema.sql
+   mysql -u root -p < sql/seed.sql
    ```
-2. Edit DB credentials in [`src/com/foodapp/util/DBConnection.java`](file:///home/adith/Documents/OOPS%20PROJECT/src/com/foodapp/util/DBConnection.java):
-   ```java
-   private static final String PASS = "your_actual_password";
-   ```
-3. Download `mysql-connector-j-*.jar` and place it in the project root.
-4. Compile & run with the JAR on the classpath:
+2. Configure credentials via environment variables:
    ```bash
-   javac -cp mysql-connector-j.jar -d out $(find src -name "*.java")
-   java -cp out:mysql-connector-j.jar com.foodapp.ui.LoginPage
+   export DB_URL="jdbc:mysql://localhost:3306/mealplan_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+   export DB_USER="root"
+   export DB_PASSWORD="your_password"
    ```
+   *(Or edit `src/com/foodapp/util/DBConnection.java` or `db.properties`)*
 
 > **Note:** If MySQL is unreachable, the app automatically falls back to `SampleData` 
-> for meal plans, so the UI is always fully demo-able without a database.
-
----
-
-## Key Integration TODOs (Quick Reference)
-
-| File | Line | Owner | What to do |
-|------|------|-------|------------|
-| [`MealPlanDetailsPage.java`](file:///home/adith/Documents/OOPS%20PROJECT/src/com/foodapp/ui/MealPlanDetailsPage.java) | `select.addActionListener(...)` | Person 3 | ✅ Opens `MealCustomizationPage` |
-| [`HomePage.java`](file:///home/adith/Documents/OOPS%20PROJECT/src/com/foodapp/ui/HomePage.java) | `myOrders.addActionListener(...)` | Person 5 | Open My Orders page |
-| [`PaymentResultPage.java`](file:///home/adith/Documents/OOPS%20PROJECT/src/com/foodapp/ui/PaymentResultPage.java) | `if (ok) System.exit(0)` | Person 5 | Navigate to My Orders page |
-| [`DBConnection.java`](file:///home/adith/Documents/OOPS%20PROJECT/src/com/foodapp/util/DBConnection.java) | `PASS` field | Person 5 | Replace with real DB connection |
-| [`AuthService.java`](file:///home/adith/Documents/OOPS%20PROJECT/src/com/foodapp/auth/AuthService.java) | `List<Customer> customers` | Person 5 | Replace with JDBC-backed store |
+> for meal plans and offline auth, so the UI is always 100% demo-ready without a database.
