@@ -66,10 +66,10 @@ public class MealPlanDetailsPage extends JFrame {
         });
 
         JButton select = UIStyle.button("Select & Customize");
-        // TODO (Person 3): open the Meal Customization page, passing 'plan'
-        select.addActionListener(e ->
-            JOptionPane.showMessageDialog(this, "Selected: " + plan.getName()
-                + "\nCustomization page - coming from Person 3"));
+        select.addActionListener(e -> {
+            new MealCustomizationPage(customerName, plan).setVisible(true);
+            dispose();
+        });
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
         buttons.add(back);

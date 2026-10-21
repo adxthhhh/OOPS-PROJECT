@@ -14,7 +14,7 @@
 |---|--------|--------|--------|
 | 1 | Person 1 | Auth — Login & Register | ✅ Complete |
 | 2 | Person 2 | Meal Plans — Browse & Details | ✅ Complete |
-| 3 | Person 3 | Meal Customization | ⏳ Not started — TODO hook in `MealPlanDetailsPage` |
+| 3 | Person 3 | Meal Customization | ✅ Complete |
 | 4 | Person 4 (Adarsh) | Payment Processing | ✅ Complete |
 | 5 | Person 5 | My Orders + Real DB Connection | ⏳ Not started — TODO hooks in `HomePage` & `DBConnection` |
 
@@ -61,16 +61,25 @@
 
 ---
 
-### ⏳ Person 3 — Meal Customization Module
-**Files:** *(not yet created)*
+### ✅ Person 3 — Meal Customization Module
+**Files:** `src/com/foodapp/ui/MealCustomizationPage.java`
 
-**What's needed:**
-- [ ] Create a `MealCustomizationPage` Swing UI
-- [ ] Hook into `MealPlanDetailsPage.java` at the marked TODO:
-  ```java
-  // TODO (Person 3): open the Meal Customization page, passing 'plan'
-  select.addActionListener(e -> /* open your page here */);
-  ```
+**What's done:**
+- [x] `MealCustomizationPage` Swing UI — full two-column layout (item list + order summary)
+- [x] Filter bar with chip buttons: All / Veg / Non-Veg with live item list rebuild
+- [x] Select All / Clear All convenience buttons
+- [x] Per-item `ItemRow` inner class (encapsulation) with `JCheckBox` + `JSpinner` (qty 1–5)
+- [x] Item cards: name, veg/non-veg badge, description, meal type, price per serving
+- [x] Live order summary (base price + extra qty cost → total)
+- [x] Special Instructions free-text area
+- [x] Confirmation dialog before proceeding to `PaymentPage`
+- [x] Wired into `MealPlanDetailsPage` — "Select & Customize" button now launches the page
+
+**OOP Concepts demonstrated:**
+- Encapsulation via inner `ItemRow` class
+- Polymorphism via `MealPlan` abstract hierarchy
+- Composition of reusable UI helpers
+- Event-driven programming (listeners refresh summary in real time)
 
 ---
 
@@ -206,7 +215,7 @@ java -cp "lib/*:out" com.foodapp.payment.PaymentTest
 
 | File | Line | Owner | What to do |
 |------|------|-------|------------|
-| [`MealPlanDetailsPage.java`](file:///home/adith/Documents/OOPS%20PROJECT/src/com/foodapp/ui/MealPlanDetailsPage.java) | `select.addActionListener(...)` | Person 3 | Open Customization page |
+| [`MealPlanDetailsPage.java`](file:///home/adith/Documents/OOPS%20PROJECT/src/com/foodapp/ui/MealPlanDetailsPage.java) | `select.addActionListener(...)` | Person 3 | ✅ Opens `MealCustomizationPage` |
 | [`HomePage.java`](file:///home/adith/Documents/OOPS%20PROJECT/src/com/foodapp/ui/HomePage.java) | `myOrders.addActionListener(...)` | Person 5 | Open My Orders page |
 | [`PaymentResultPage.java`](file:///home/adith/Documents/OOPS%20PROJECT/src/com/foodapp/ui/PaymentResultPage.java) | `if (ok) System.exit(0)` | Person 5 | Navigate to My Orders page |
 | [`DBConnection.java`](file:///home/adith/Documents/OOPS%20PROJECT/src/com/foodapp/util/DBConnection.java) | `PASS` field | Person 5 | Replace with real DB connection |
