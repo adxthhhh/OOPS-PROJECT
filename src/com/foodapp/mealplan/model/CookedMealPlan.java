@@ -8,6 +8,11 @@ public class CookedMealPlan extends MealPlan {
         super(planId, name, description, durationDays, mealsPerDay, price);
     }
 
+    public CookedMealPlan(int planId, String name, String description,
+                          int durationDays, int mealsPerDay, double price, boolean active) {
+        super(planId, name, description, durationDays, mealsPerDay, price, active);
+    }
+
     @Override
     public String getPlanType() { return "Cooked Meals"; }
 

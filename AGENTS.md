@@ -37,8 +37,8 @@
 
 ---
 
-### ✅ Person 2 — Meal Plan Module
-**Files:** `src/com/foodapp/mealplan/`, `src/com/foodapp/ui/HomePage.java`, `src/com/foodapp/ui/MealPlansPage.java`, `src/com/foodapp/ui/MealPlanDetailsPage.java`, `src/com/foodapp/ui/UIStyle.java`
+### ✅ Person 2 — Meal Plan & Explore Module
+**Files:** `src/com/foodapp/mealplan/`, `src/com/foodapp/ui/ExplorePage.java`, `src/com/foodapp/ui/HomePage.java`, `src/com/foodapp/ui/MealPlansPage.java`, `src/com/foodapp/ui/MealPlanDetailsPage.java`, `src/com/foodapp/ui/UIStyle.java`
 
 **What's done:**
 - [x] `MealPlan` abstract class (planId, name, description, duration, mealsPerDay, price, foodItems)
@@ -48,7 +48,8 @@
 - [x] `MealPlanDAO` — DB queries with automatic fallback to `SampleData` if MySQL is unreachable
 - [x] `FoodItemDAO` — fetches food items per plan from DB
 - [x] `SampleData` — 4 hardcoded plans (2 Cooked, 2 Meal Kit) for offline demo
-- [x] `HomePage` Swing UI — welcome screen with "Browse Meal Plans" and "My Orders" buttons
+- [x] `ExplorePage` Swing UI — high-fidelity MealFlow Explore dashboard mirroring modern Tailwind design (fixed sidebar with active plan widget, live header with address selector, instant search, notifications, dynamic cart counter, delivery window status, interactive filter chips, curated meal-plan hero banner, 7 meal-type category tiles, 6 high-fidelity dish cards with macros and quantity steppers, schedule recommendations, and featured neighborhood kitchens)
+- [x] `HomePage` Swing UI — extends `ExplorePage` for unified seamless landing experience
 - [x] `MealPlansPage` Swing UI — grid of plan cards with type filter dropdown
 - [x] `MealPlanDetailsPage` Swing UI — plan summary + food items table + "Select & Customize" button
 - [x] `ProfilePage` Swing UI — user avatar, account info, subscription status, back & logout actions
