@@ -81,16 +81,17 @@ public class AuthService {
      * @param plainPassword plain text password entered at login
      * @return authenticated Customer object, or null on bad credentials
      */
-    public static Customer login(String email, String plainPassword) {
-        if (!AuthValidator.isNotEmpty(email) || !AuthValidator.isNotEmpty(plainPassword)) {
+    public static Customer login(String identifier, String plainPassword) {
+        if (!AuthValidator.isNotEmpty(identifier) || !AuthValidator.isNotEmpty(plainPassword)) {
             return null;
         }
 
+        String trimmed = identifier.trim();
         try {
-            Customer c = customerDAO.findByEmail(email);
+            Customer c = customerDAO.findByEmailOrPhone(trimmed);
             if (c != null) {
                 if (!c.isActive()) {
-                    System.err.println("[AuthService] Inactive customer account: " + email);
+                    System.err.println("[AuthService] Inactive customer account: " + trimmed);
                     return null;
                 }
                 if (BCrypt.checkpw(plainPassword, c.getPassword())) {
@@ -104,7 +105,7 @@ public class AuthService {
             if (DBConnection.isFallbackAllowed()) {
                 System.err.println("[AuthService] MySQL unavailable (" + e.getMessage() + "). Checking offline fallback users.");
                 for (Customer c : fallbackCustomers) {
-                    if (c.getEmail().equalsIgnoreCase(email) && c.isActive()) {
+                    if ((c.getEmail().equalsIgnoreCase(trimmed) || (c.getPhone() != null && c.getPhone().equals(trimmed))) && c.isActive()) {
                         if (BCrypt.checkpw(plainPassword, c.getPassword()) || plainPassword.equals(c.getPassword())) {
                             currentUser = c;
                             return c;

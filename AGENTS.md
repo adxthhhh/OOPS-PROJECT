@@ -27,11 +27,12 @@
 
 **What's done:**
 - [x] `Customer` POJO (name, email, phone, passwordHash)
-- [x] `AuthService` — BCrypt password hashing + MySQL authentication with automatic offline in-memory fallback
-- [x] `CustomerDAO` — full JDBC implementation for customers table
-- [x] `AuthValidator` — email regex, phone (10 digits), password (min 6 chars), non-empty checks
-- [x] `LoginPage` Swing UI — modern MealFlow branded split layout, validation, navigates to `HomePage` / `ExplorePage` on success
-- [x] `RegisterPage` Swing UI — live password strength meter, terms checkbox, validation
+- [x] `AuthService` — BCrypt password hashing + MySQL authentication with dual Email and Mobile Number support (`findByEmailOrPhone`), and automatic offline fallback
+- [x] `CustomerDAO` — full JDBC implementation for customers table with `findByEmail`, `findByPhone`, `findByEmailOrPhone`
+- [x] `AuthValidator` — email regex, phone (10 digits), `isValidEmailOrPhone`, password (min 6 chars), non-empty checks
+- [x] `LoginPage` Swing UI — modern MealFlow branded split layout, real cloud kitchen photo showcase (`kitchen_green.jpg`), circular avatar (`avatar.jpg`), active "← Back to Marketplace" navigation, Google/Apple SSO simulation, 1-Click test credentials auto-fill (`rahul@example.com` / `password123`), forgot password notification, navigates to `HomePage` / `ExplorePage` on success
+- [x] `RegisterPage` Swing UI — real macro bowl food photo showcase (`dish_quinoa_avocado.jpg`), live password strength meter, 1-Click verified test registration auto-fill, interactive Terms of Service & Privacy dialog, active "← Back to Marketplace" navigation, validation & terms check
+
 
 ---
 
@@ -46,7 +47,7 @@
 - [x] `MealPlanDAO` & `FoodItemDAO` — DB queries with automatic fallback to `SampleData` if MySQL is unreachable
 - [x] `MealPlanService` & `FoodItemService` — business layer for meal plans & items
 - [x] `SampleData` — 4 hardcoded plans (2 Cooked, 2 Meal Kit) for offline demo
-- [x] `ExplorePage` Swing UI — high-fidelity MealFlow Explore dashboard mirroring modern Tailwind design (fixed sidebar with active plan widget, live header with address selector, instant search, notifications, dynamic cart counter, delivery window status, interactive filter chips, curated meal-plan hero banner, 7 meal-type category tiles, 6 high-fidelity dish cards with macros and quantity steppers, schedule recommendations, and featured neighborhood kitchens)
+- [x] `ExplorePage` Swing UI — high-fidelity MealFlow Explore dashboard mirroring modern Tailwind design (fixed sidebar with active plan widget, live header with address selector, instant search, notifications, dynamic cart counter, delivery window status, interactive filter chips, curated meal-plan hero banner, 7 meal-type category tiles, 6 high-fidelity dish cards with macros and quantity steppers, and featured neighborhood kitchens)
 - [x] `HomePage` Swing UI — extends `ExplorePage` for unified seamless landing experience
 - [x] `MealPlansPage` Swing UI — grid of plan cards with type filter dropdown
 - [x] `MealPlanDetailsPage` Swing UI — plan summary + food items table + "Select & Customize" button
@@ -71,8 +72,8 @@
 
 ---
 
-### ✅ Person 4 (Adarsh) — Payment Module
-**Files:** `src/com/foodapp/payment/`, `src/com/foodapp/ui/PaymentPage.java`, `src/com/foodapp/ui/PaymentResultPage.java`
+### ✅ Person 4 (Adarsh) — Payment & Checkout Module
+**Files:** `src/com/foodapp/payment/`, `src/com/foodapp/ui/PaymentPage.java`, `src/com/foodapp/ui/PaymentResultPage.java`, `src/com/foodapp/ui/MealPricingDetailsPage.java`
 
 **What's done:**
 - [x] `Payment` abstract class — amount, status (PENDING/SUCCESS/FAILED), transactionId, message
@@ -81,8 +82,9 @@
 - [x] `WalletPayment` — checks balance sufficiency before deducting
 - [x] `CODPayment` — validates delivery address is non-empty
 - [x] `PaymentDAO` & `PaymentService` — persistent payment records and transaction state
-- [x] `PaymentPage` Swing UI — radio-button method selector with `CardLayout` detail panels
-- [x] `PaymentResultPage` Swing UI — displays SUCCESS (green) or FAILED (red) with transaction ID, wired to My Orders
+- [x] `MealPricingDetailsPage` Swing UI — high-fidelity 2-column dish customization & nutrition breakdown modal (4:3 food visual with bestseller & veg badges, animated SVG-style Macro Donut Chart for Protein/Carbs/Fats, 4 macro progress bars, base radio selector, protein/sides checkboxes, live unit & total price calculations, quantity stepper, and animated toast notifications)
+- [x] `PaymentPage` Swing UI — complete modern on-demand checkout dashboard (navigation sidebar with active plan widget, address selector, search with ⌘K, vendor banner, dishes in cart with live quantity steppers, multiple delivery address tiles, instant rider instruction pills, MealFlow Cash balance redemption toggle, Indian context payment selector with verified UPI, Credit/Debit cards, Cash on Delivery, promo code 'SAVEMF' panel, calorie sparkline gauge, and atomic checkout order persistence)
+- [x] `PaymentResultPage` Swing UI — modern receipt card with circular status icons (green checkmark / red cross), itemized payment summary, dispatch timeline notice, and live delivery tracking navigator
 - [x] `PaymentTest` — CLI test runner covering valid + invalid inputs for all 4 methods
 
 ---
@@ -152,7 +154,14 @@ java -cp "lib/*:out" com.foodapp.payment.PaymentTest
   ├─ Hero Banner: Active/Curated meal plan subscription banner
   ├─ Category Chips: All, Chef's Special, High Protein, Low Carb, Keto, Vegan, Comfort
   ├─ Dish Cards: Image, macros, veg indicator, price, quantity stepper + Add to Cart
-  ├─ Schedule Timeline & Neighborhood Kitchens
+  ├─ Click Dish Card Banner / Title → [MealPricingDetailsPage]
+  │    ├─ 4:3 Food visual with bestseller & veg badges
+  │    ├─ Macro Donut chart (Protein 28%, Carbs 48%, Fats 24%) & 4 macro meters
+  │    ├─ Bases (Brown Basmati, Quinoa, Cauliflower) + Protein & Sides add-ons
+  │    ├─ Quantity stepper + live dynamic price calculation
+  │    ├─ "Add to Weekly Plan" / "Add to Cart" with toast notification
+  │    └─ "Proceed to Payment" → [PaymentPage]
+  ├─ Featured Neighborhood Kitchens
   ├─ "Browse Meal Plans" → [MealPlansPage]
   ├─ "My Orders" tab/button → [MyOrdersPage]
   └─ Profile button → [ProfilePage]
@@ -176,15 +185,24 @@ java -cp "lib/*:out" com.foodapp.payment.PaymentTest
   ├─ Order Summary card (base price, extras, total)
   └─ "Proceed to Payment" → [PaymentPage]
 
-[PaymentPage] (launched with total amount)
-  ├─ Payment method selector: UPI | Card | Wallet | Cash on Delivery
-  ├─ Dynamic CardLayout detail form
-  └─ "Pay Rs.<amount>" → validates input → [PaymentResultPage]
+[PaymentPage] (High-Fidelity On-Demand Checkout)
+  ├─ Fixed navigation sidebar + live search header with address selector
+  ├─ Consolidated vendor banner ("The Green Kitchen")
+  ├─ Dynamic cart dish cards with quantity steppers and line price recalculations
+  ├─ Delivery address tiles: Home (Default) vs Work + Add New Address
+  ├─ Rider preferences pills ("Avoid calling", "Leave with security", etc.) + delivery notes
+  ├─ MealFlow Cash balance widget (₹460 available, "Apply ₹200" checkbox)
+  ├─ Payment mode cards: Verified UPI ID with VPA change, Credit/Debit cards, Cash on Delivery
+  ├─ Promo code panel ('SAVEMF' ₹50 discount apply/remove)
+  ├─ Macro sparkline gauge (840 kcal, 38g Protein, 54g Carbs, 18g Fats)
+  ├─ Itemized bill breakdown (subtotal, packaging, delivery partner fee, GST, total savings)
+  └─ "Place Order • ₹<total>" → OOP payment validation → atomic order persistence → [PaymentResultPage]
 
 [PaymentResultPage]
-  ├─ SUCCESS (green): Method, Amount, Transaction ID, confirmation message
-  │    └─ "View Orders" → [MyOrdersPage]
-  └─ FAILED (red): Method, Amount, failure reason
+  ├─ SUCCESS (green checkmark): Method, Amount, Transaction ID, 30-35 min dispatch notice
+  │    ├─ "View My Orders & Live Tracking" → [MyOrdersPage]
+  │    └─ "Back to Explore" → [ExplorePage]
+  └─ FAILED (red cross): Method, Amount, failure diagnosis
        └─ "Try Again" → back to [PaymentPage]
 
 [MyOrdersPage]

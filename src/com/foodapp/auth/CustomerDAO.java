@@ -54,6 +54,44 @@ public class CustomerDAO {
         return null;
     }
 
+    public Customer findByPhone(String phone) throws SQLException {
+        if (phone == null) return null;
+        String sql = "SELECT customer_id, name, email, phone, password_hash, is_active, created_at " +
+                     "FROM customers WHERE phone = ?";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, phone.trim());
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapRow(rs);
+                }
+            }
+        }
+        return null;
+    }
+
+    public Customer findByEmailOrPhone(String identifier) throws SQLException {
+        if (identifier == null) return null;
+        String trimmed = identifier.trim();
+        String sql = "SELECT customer_id, name, email, phone, password_hash, is_active, created_at " +
+                     "FROM customers WHERE email = ? OR phone = ?";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, trimmed.toLowerCase());
+            ps.setString(2, trimmed);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapRow(rs);
+                }
+            }
+        }
+        return null;
+    }
+
     public Customer findById(int customerId) throws SQLException {
         String sql = "SELECT customer_id, name, email, phone, password_hash, is_active, created_at " +
                      "FROM customers WHERE customer_id = ?";

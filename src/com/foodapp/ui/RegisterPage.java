@@ -3,6 +3,7 @@ package com.foodapp.ui;
 import com.foodapp.auth.AuthService;
 import com.foodapp.auth.AuthValidator;
 import com.foodapp.auth.Customer;
+import com.foodapp.util.ImageLoader;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -104,20 +105,44 @@ public class RegisterPage extends JFrame {
                 BorderFactory.createEmptyBorder(0, 40, 0, 40)));
         h.setPreferredSize(new Dimension(0, 56));
 
-        JPanel logo = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        JPanel logo = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         logo.setOpaque(false);
-        JLabel logoIcon = new JLabel("🍽"); logoIcon.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 20));
-        JLabel logoText = new JLabel("MealFlow"); logoText.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 18));
+        JPanel logoImg = ImageLoader.createImagePanel("logo.png", 26, 26, 6);
+        logoImg.setPreferredSize(new Dimension(26, 26));
+        JLabel logoText = new JLabel("MealFlow");
+        logoText.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 18));
         logoText.setForeground(C_TEXT);
-        logo.add(logoIcon); logo.add(logoText);
+        logo.add(logoImg);
+        logo.add(logoText);
 
-        JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
+        JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 14, 0));
         right.setOpaque(false);
-        JLabel backLbl = new JLabel("← Back to Marketplace"); backLbl.setFont(F_LABEL); backLbl.setForeground(C_MUTED);
-        JLabel langLbl = new JLabel("🌐 EN"); langLbl.setFont(F_LABEL); langLbl.setForeground(C_MUTED);
-        right.add(backLbl); right.add(langLbl);
+        JLabel backLbl = new JLabel("← Back to Marketplace");
+        backLbl.setFont(F_LABEL);
+        backLbl.setForeground(C_PRIMARY);
+        backLbl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        backLbl.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                new ExplorePage().setVisible(true);
+                dispose();
+            }
+        });
 
-        h.add(logo, BorderLayout.WEST); h.add(right, BorderLayout.EAST);
+        JPanel sep = new JPanel();
+        sep.setBackground(C_OUTL_V);
+        sep.setPreferredSize(new Dimension(1, 16));
+
+        JLabel langLbl = new JLabel("🌐 Bengaluru (EN)");
+        langLbl.setFont(F_LABEL);
+        langLbl.setForeground(C_MUTED);
+
+        right.add(backLbl);
+        right.add(sep);
+        right.add(langLbl);
+
+        h.add(logo, BorderLayout.WEST);
+        h.add(right, BorderLayout.EAST);
         return h;
     }
 
@@ -204,36 +229,28 @@ public class RegisterPage extends JFrame {
     }
 
     private JPanel buildHeroImageCard() {
-        JPanel card = new JPanel(new BorderLayout()) {
+        JPanel card = new JPanel(new BorderLayout());
+        card.setPreferredSize(new Dimension(0, 180));
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 180));
+        card.setBackground(C_SURF_CON);
+        card.setBorder(BorderFactory.createLineBorder(C_OUTL_V, 1, true));
+
+        // Real food photo
+        JPanel imgPanel = ImageLoader.createImagePanel("dish_quinoa_avocado.jpg", 390, 180, 10);
+        imgPanel.setLayout(new BorderLayout());
+
+        JPanel overlay = new JPanel(new BorderLayout()) {
             @Override protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g.create();
-                // Beautiful gradient background simulating the grain bowl photo
-                GradientPaint gp = new GradientPaint(0, 0, new Color(0x6B, 0xB5, 0x6B),
-                        getWidth(), getHeight(), new Color(0xC8, 0xE6, 0xBB));
-                g2.setPaint(gp); g2.fillRect(0, 0, getWidth(), getHeight());
-                // Abstract food shapes
-                g2.setColor(new Color(0xFF, 0xAA, 0x44, 100));
-                g2.fillOval(30, 30, 70, 55);
-                g2.setColor(new Color(0xFF, 0xFF, 0xFF, 80));
-                g2.fillOval(110, 15, 50, 40);
-                g2.setColor(new Color(0x44, 0x99, 0x44, 100));
-                g2.fillOval(170, 30, 60, 50);
-                g2.setColor(new Color(0xFF, 0xDD, 0x88, 80));
-                g2.fillOval(60, 70, 80, 60);
-                // Dark gradient overlay (bottom)
-                GradientPaint overlay = new GradientPaint(0, getHeight(), new Color(0x2A, 0x32, 0x2D, 210), 0, getHeight() / 2, new Color(0, 0, 0, 0));
-                g2.setPaint(overlay); g2.fillRect(0, 0, getWidth(), getHeight());
+                GradientPaint gp = new GradientPaint(0, getHeight(), new Color(0x15, 0x1D, 0x19, 230), 0, 0, new Color(0, 0, 0, 30));
+                g2.setPaint(gp);
+                g2.fillRect(0, 0, getWidth(), getHeight());
                 g2.dispose();
             }
         };
-        card.setPreferredSize(new Dimension(0, 180));
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 180));
-        card.setBorder(BorderFactory.createLineBorder(C_OUTL_V, 1, true));
-
-        JPanel labelPanel = new JPanel(new BorderLayout());
-        labelPanel.setOpaque(false);
-        labelPanel.setBorder(BorderFactory.createEmptyBorder(0, 14, 14, 14));
+        overlay.setOpaque(false);
+        overlay.setBorder(BorderFactory.createEmptyBorder(0, 14, 14, 14));
 
         JPanel textStack = new JPanel();
         textStack.setLayout(new BoxLayout(textStack, BoxLayout.Y_AXIS));
@@ -242,18 +259,23 @@ public class RegisterPage extends JFrame {
         tag.setFont(F_MICRO); tag.setForeground(C_SEC_FIX);
         JLabel name = new JLabel("Harvest Quinoa & Spiced Tempeh");
         name.setFont(F_TITLE); name.setForeground(Color.WHITE);
-        JLabel kcal = new JLabel("540 kcal");
+        JLabel kcal = new JLabel("540 kcal · 26g Protein · Low Carb");
         kcal.setFont(F_LABEL); kcal.setForeground(new Color(0xFF, 0xB5, 0x99));
-        textStack.add(tag); textStack.add(name); textStack.add(kcal);
+        textStack.add(tag);
+        textStack.add(Box.createVerticalStrut(2));
+        textStack.add(name);
+        textStack.add(Box.createVerticalStrut(2));
+        textStack.add(kcal);
 
-        labelPanel.add(textStack, BorderLayout.SOUTH);
-        card.add(labelPanel, BorderLayout.CENTER);
+        overlay.add(textStack, BorderLayout.SOUTH);
+        imgPanel.add(overlay, BorderLayout.CENTER);
+        card.add(imgPanel, BorderLayout.CENTER);
         return card;
     }
 
     private JPanel buildQuoteCard() {
-        JPanel card = new JPanel(new BorderLayout(8, 0));
-        card.setBackground(new Color(0xFF, 0xFF, 0xFF, 240));
+        JPanel card = new JPanel(new BorderLayout(10, 0));
+        card.setBackground(new Color(0xFF, 0xFF, 0xFF, 245));
         card.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(C_OUTL_V, 1, true),
                 BorderFactory.createEmptyBorder(12, 14, 12, 14)));
@@ -271,12 +293,11 @@ public class RegisterPage extends JFrame {
 
         JPanel meta = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         meta.setOpaque(false);
-        JLabel avatar = new JLabel("P"); avatar.setFont(F_MICRO); avatar.setForeground(C_MUTED);
-        avatar.setOpaque(true); avatar.setBackground(C_SURF_HI);
-        avatar.setPreferredSize(new Dimension(20, 20)); avatar.setHorizontalAlignment(SwingConstants.CENTER);
+        JPanel av = ImageLoader.createImagePanel("avatar.jpg", 22, 22, 11);
+        av.setPreferredSize(new Dimension(22, 22));
         JLabel authorName = new JLabel("Pooja N."); authorName.setFont(F_LABEL); authorName.setForeground(C_TEXT);
-        JLabel role = new JLabel("· Product Lead"); role.setFont(F_SMALL); role.setForeground(C_MUTED);
-        meta.add(avatar); meta.add(authorName); meta.add(role);
+        JLabel role = new JLabel("· Product Lead, Indiranagar"); role.setFont(F_SMALL); role.setForeground(C_MUTED);
+        meta.add(av); meta.add(authorName); meta.add(role);
 
         textPanel.add(qt); textPanel.add(Box.createVerticalStrut(6)); textPanel.add(meta);
         card.add(quoteIcon, BorderLayout.WEST); card.add(textPanel, BorderLayout.CENTER);
@@ -337,23 +358,79 @@ public class RegisterPage extends JFrame {
         headline.setFont(F_DISPLAY); headline.setForeground(C_TEXT);
         headline.setAlignmentX(LEFT_ALIGNMENT);
 
-        JLabel sub = new JLabel("<html><span style='color:#59413c;'>Start ordering on-demand or set up your recurring weekly meal schedule.</span></html>");
+        JLabel sub = new JLabel("<html><span style='color:#59413c;'>Start ordering on-demand or explore wholesome curated meal plans.</span></html>");
         sub.setFont(F_BODY); sub.setAlignmentX(LEFT_ALIGNMENT);
 
         p.add(getStarted); p.add(Box.createVerticalStrut(4));
         p.add(headline);   p.add(Box.createVerticalStrut(4));
         p.add(sub);        p.add(Box.createVerticalStrut(18));
 
-        // ── SSO buttons (decorative) ──
+        // ── SSO buttons ──
         JPanel ssoRow = new JPanel(new GridLayout(1, 2, 10, 0));
         ssoRow.setOpaque(false); ssoRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
         ssoRow.setAlignmentX(LEFT_ALIGNMENT);
-        ssoRow.add(ssoBtn("G  Sign up with Google"));
-        ssoRow.add(ssoBtn("  Sign up with Apple"));
+        JButton googleBtn = ssoBtn("G  Sign up with Google");
+        JButton appleBtn = ssoBtn("  Sign up with Apple");
+
+        googleBtn.addActionListener(e -> {
+            nameField.setText("Ananya Iyer");
+            emailField.setText("ananya.iyer@gmail.com");
+            phoneField.setText("9876501234");
+            passField.setText("MealFlow@2025");
+            confirmField.setText("MealFlow@2025");
+            termsChk.setSelected(true);
+            errorLabel.setText("Google Profile auto-filled. Click 'Create Account'.");
+            errorLabel.setForeground(C_SEC);
+        });
+        appleBtn.addActionListener(e -> {
+            nameField.setText("Karan Mehta");
+            emailField.setText("karan.m@icloud.com");
+            phoneField.setText("9811223344");
+            passField.setText("MealFlow@2025");
+            confirmField.setText("MealFlow@2025");
+            termsChk.setSelected(true);
+            errorLabel.setText("Apple ID Profile auto-filled. Click 'Create Account'.");
+            errorLabel.setForeground(C_SEC);
+        });
+
+        ssoRow.add(googleBtn);
+        ssoRow.add(appleBtn);
         p.add(ssoRow); p.add(Box.createVerticalStrut(14));
 
         // ── Divider ──
-        p.add(divider("or register with details")); p.add(Box.createVerticalStrut(14));
+        p.add(divider("or register with details")); p.add(Box.createVerticalStrut(12));
+
+        // ── Quick demo registration fill bar ──
+        JPanel demoBox = new JPanel(new BorderLayout(8, 0));
+        demoBox.setBackground(C_SURF_LOW);
+        demoBox.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(C_OUTL_V, 1, true),
+                BorderFactory.createEmptyBorder(6, 12, 6, 8)
+        ));
+        demoBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
+        demoBox.setAlignmentX(LEFT_ALIGNMENT);
+        JLabel demoInfo = new JLabel("💡 Need test data? Fill verified registration fields");
+        demoInfo.setFont(F_SMALL);
+        demoInfo.setForeground(C_MUTED);
+        JButton fillBtn = new JButton("1-Click Fill");
+        fillBtn.setFont(F_MICRO);
+        fillBtn.setBackground(C_SEC_FIX);
+        fillBtn.setForeground(new Color(0x00, 0x21, 0x14));
+        fillBtn.setFocusPainted(false);
+        fillBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        fillBtn.addActionListener(ev -> {
+            nameField.setText("Vikram Rathore");
+            emailField.setText("vikram.r@example.com");
+            phoneField.setText("9845098765");
+            passField.setText("SecurePass@123");
+            confirmField.setText("SecurePass@123");
+            termsChk.setSelected(true);
+            errorLabel.setText("Form filled with verified format test data.");
+            errorLabel.setForeground(C_SEC);
+        });
+        demoBox.add(demoInfo, BorderLayout.CENTER);
+        demoBox.add(fillBtn, BorderLayout.EAST);
+        p.add(demoBox); p.add(Box.createVerticalStrut(12));
 
         // ── Error ──
         errorLabel.setFont(F_SMALL); errorLabel.setForeground(C_ERR);
@@ -437,6 +514,7 @@ public class RegisterPage extends JFrame {
         // ── Confirm Password ──
         p.add(fieldLabel("Confirm Password")); p.add(Box.createVerticalStrut(4));
         styleField(confirmField); confirmField.setAlignmentX(LEFT_ALIGNMENT);
+        confirmField.addActionListener(e -> doRegister());
         p.add(confirmField); p.add(Box.createVerticalStrut(12));
 
         // ── Terms checkbox ──
@@ -444,8 +522,21 @@ public class RegisterPage extends JFrame {
         termsRow.setOpaque(false); termsRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 48));
         termsRow.setAlignmentX(LEFT_ALIGNMENT);
         termsChk.setOpaque(false);
-        JLabel termsLbl = new JLabel("<html><span style='color:#59413c;'>I agree to MealFlow's <b style='color:#ab2e16;'>Terms of Service</b> and <b style='color:#ab2e16;'>Privacy Policy</b>. I consent to order status dispatches via WhatsApp &amp; SMS.</span></html>");
+        JLabel termsLbl = new JLabel("<html><span style='color:#59413c;'>I agree to MealFlow's <b style='color:#ab2e16;'><u>Terms of Service</u></b> and <b style='color:#ab2e16;'><u>Privacy Policy</u></b>. I consent to status updates via WhatsApp &amp; SMS.</span></html>");
         termsLbl.setFont(F_SMALL);
+        termsLbl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        termsLbl.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                JOptionPane.showMessageDialog(RegisterPage.this,
+                        "MealFlow Terms & Guarantees:\n" +
+                        "1. 100% Hygienic FSSAI Grade-A audited cloud kitchens.\n" +
+                        "2. Total flexibility: skip, pause or cancel meal plans anytime.\n" +
+                        "3. Instant UPI / Card refund guarantees for order disputes.\n" +
+                        "4. We respect user privacy and never share contacts with advertisers.",
+                        "MealFlow Terms of Service & Privacy Policy", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
         termsRow.add(termsChk, BorderLayout.WEST); termsRow.add(termsLbl, BorderLayout.CENTER);
         p.add(termsRow); p.add(Box.createVerticalStrut(16));
 

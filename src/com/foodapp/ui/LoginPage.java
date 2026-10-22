@@ -3,6 +3,7 @@ package com.foodapp.ui;
 import com.foodapp.auth.AuthService;
 import com.foodapp.auth.AuthValidator;
 import com.foodapp.auth.Customer;
+import com.foodapp.util.ImageLoader;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -96,26 +97,42 @@ public class LoginPage extends JFrame {
         h.setPreferredSize(new Dimension(0, 56));
 
         // Logo
-        JPanel logo = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        JPanel logo = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         logo.setOpaque(false);
-        JLabel logoIcon = new JLabel("🍽");
-        logoIcon.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 20));
+        JPanel logoImg = ImageLoader.createImagePanel("logo.png", 26, 26, 6);
+        logoImg.setPreferredSize(new Dimension(26, 26));
         JLabel logoText = new JLabel("MealFlow");
         logoText.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 18));
         logoText.setForeground(C_TEXT);
-        logo.add(logoIcon); logo.add(logoText);
+        logo.add(logoImg);
+        logo.add(logoText);
 
         // Right side: back + lang
-        JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
+        JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 14, 0));
         right.setOpaque(false);
         JLabel backLbl = new JLabel("← Back to Marketplace");
-        backLbl.setFont(F_LABEL); backLbl.setForeground(C_MUTED);
+        backLbl.setFont(F_LABEL);
+        backLbl.setForeground(C_PRIMARY);
         backLbl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        JPanel sep = new JPanel(); sep.setBackground(C_OUTL_V);
+        backLbl.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                new ExplorePage().setVisible(true);
+                dispose();
+            }
+        });
+
+        JPanel sep = new JPanel();
+        sep.setBackground(C_OUTL_V);
         sep.setPreferredSize(new Dimension(1, 16));
-        JLabel langLbl = new JLabel("🌐 EN");
-        langLbl.setFont(F_LABEL); langLbl.setForeground(C_MUTED);
-        right.add(backLbl); right.add(sep); right.add(langLbl);
+
+        JLabel langLbl = new JLabel("🌐 Bengaluru (EN)");
+        langLbl.setFont(F_LABEL);
+        langLbl.setForeground(C_MUTED);
+
+        right.add(backLbl);
+        right.add(sep);
+        right.add(langLbl);
 
         h.add(logo, BorderLayout.WEST);
         h.add(right, BorderLayout.EAST);
@@ -153,13 +170,10 @@ public class LoginPage extends JFrame {
         JPanel p = new JPanel(new BorderLayout(0, 20)) {
             @Override protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                // Decorative radial glows
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                // Top-left glow (secondary-container tint)
                 g2.setColor(new Color(0x82, 0xF5, 0xC1, 55));
                 g2.fillOval(-80, -80, 300, 300);
-                // Bottom-right glow (primary-fixed tint)
                 g2.setColor(new Color(0xFF, 0xDA, 0xD3, 70));
                 g2.fillOval(getWidth() - 160, getHeight() - 140, 260, 260);
                 g2.dispose();
@@ -195,15 +209,12 @@ public class LoginPage extends JFrame {
         // ── Trust quote ──
         JPanel quoteStrip = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         quoteStrip.setOpaque(false);
-        JLabel avatar = new JLabel("M");
-        avatar.setFont(F_BTN); avatar.setForeground(new Color(0x37, 0x0E, 0x00));
-        avatar.setHorizontalAlignment(SwingConstants.CENTER);
-        avatar.setOpaque(true); avatar.setBackground(C_TERTFIX);
-        avatar.setPreferredSize(new Dimension(34, 34));
-        avatar.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        JLabel quote = new JLabel("<html><i style='color:#59413c;'>&ldquo;MealFlow removed the daily decision fatigue of cooking after 10-hour days.&rdquo;</i></html>");
+        JPanel avatarPanel = ImageLoader.createImagePanel("avatar.jpg", 36, 36, 18);
+        avatarPanel.setPreferredSize(new Dimension(36, 36));
+
+        JLabel quote = new JLabel("<html><i style='color:#59413c;'>&ldquo;MealFlow removed the daily decision fatigue of cooking after 10-hour days.&rdquo;</i><br><span style='color:#151d19;font-weight:bold;font-size:10px;'>Pooja N. · Verified Subscriber</span></html>");
         quote.setFont(F_SMALL);
-        quoteStrip.add(avatar); quoteStrip.add(quote);
+        quoteStrip.add(avatarPanel); quoteStrip.add(quote);
 
         // Assemble top section
         JPanel top = new JPanel();
@@ -229,14 +240,18 @@ public class LoginPage extends JFrame {
         card.setBackground(new Color(0xE7, 0xF0, 0xE8));
         card.setBorder(BorderFactory.createLineBorder(C_OUTL_V, 1, true));
         card.setPreferredSize(new Dimension(0, 180));
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 180));
+
+        // Use real kitchen photo
+        JPanel imgPanel = ImageLoader.createImagePanel("kitchen_green.jpg", 390, 180, 10);
+        imgPanel.setLayout(new BorderLayout());
 
         // Gradient overlay label simulating the photo card
         JPanel overlay = new JPanel(new BorderLayout()) {
             @Override protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g.create();
-                // Simulate a dark-to-light gradient like the HTML image overlay
-                GradientPaint gp = new GradientPaint(0, getHeight(), new Color(0x2A, 0x32, 0x2D, 200), 0, 0, new Color(0, 0, 0, 0));
+                GradientPaint gp = new GradientPaint(0, getHeight(), new Color(0x15, 0x1D, 0x19, 230), 0, 0, new Color(0, 0, 0, 30));
                 g2.setPaint(gp);
                 g2.fillRect(0, 0, getWidth(), getHeight());
                 g2.dispose();
@@ -245,46 +260,26 @@ public class LoginPage extends JFrame {
         overlay.setOpaque(false);
         overlay.setBorder(BorderFactory.createEmptyBorder(0, 14, 12, 14));
 
-        JPanel textOverlay = new JPanel(new BorderLayout());
-        textOverlay.setOpaque(false);
-        JLabel tag = new JLabel("FEATURED CLOUD KITCHEN");
-        tag.setFont(F_MICRO); tag.setForeground(C_SEC_FIX);
-        JLabel name = new JLabel("The Sage & Hearth Collective");
-        name.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14)); name.setForeground(Color.WHITE);
-        JLabel rating = new JLabel("★ 4.9 (1,240+ subscribers)");
-        rating.setFont(F_SMALL); rating.setForeground(new Color(0xFF, 0xB5, 0x99));
-
         JPanel textStack = new JPanel();
         textStack.setLayout(new BoxLayout(textStack, BoxLayout.Y_AXIS));
         textStack.setOpaque(false);
-        textStack.add(tag); textStack.add(name); textStack.add(rating);
+        JLabel tag = new JLabel("FEATURED CLOUD KITCHEN");
+        tag.setFont(F_MICRO); tag.setForeground(C_SEC_FIX);
+        JLabel name = new JLabel("The Green Kitchen · Indiranagar");
+        name.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 15)); name.setForeground(Color.WHITE);
+        JLabel rating = new JLabel("★ 4.9 (1,240+ subscribers) · Farm-to-Table");
+        rating.setFont(F_SMALL); rating.setForeground(new Color(0xFF, 0xB5, 0x99));
+
+        textStack.add(tag);
+        textStack.add(Box.createVerticalStrut(2));
+        textStack.add(name);
+        textStack.add(Box.createVerticalStrut(2));
+        textStack.add(rating);
 
         overlay.add(textStack, BorderLayout.SOUTH);
-        card.add(overlay, BorderLayout.CENTER);
-
-        // Tinted background to suggest the food image
-        JPanel bg = new JPanel() {
-            @Override protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2 = (Graphics2D) g.create();
-                GradientPaint gp = new GradientPaint(0, 0, new Color(0x82, 0xC4, 0x7A), getWidth(), getHeight(), new Color(0xCC, 0xE8, 0xCC));
-                g2.setPaint(gp);
-                g2.fillRect(0, 0, getWidth(), getHeight());
-                // Draw abstract food-like shapes
-                g2.setColor(new Color(0x60, 0xAA, 0x60, 80));
-                g2.fillOval(20, 20, 80, 60);
-                g2.setColor(new Color(0xFF, 0xAA, 0x44, 80));
-                g2.fillOval(100, 40, 60, 50);
-                g2.setColor(new Color(0xFF, 0xFF, 0xFF, 50));
-                g2.fillOval(160, 10, 50, 40);
-                g2.dispose();
-            }
-        };
-        bg.setPreferredSize(new Dimension(0, 180));
-        bg.add(overlay);
-        bg.setLayout(new BorderLayout());
-        bg.add(overlay, BorderLayout.CENTER);
-        return bg;
+        imgPanel.add(overlay, BorderLayout.CENTER);
+        card.add(imgPanel, BorderLayout.CENTER);
+        return card;
     }
 
     // ════════════════════════════════════════════════════════════════════════
@@ -312,16 +307,60 @@ public class LoginPage extends JFrame {
         p.add(headline); p.add(Box.createVerticalStrut(6));
         p.add(sub); p.add(Box.createVerticalStrut(22));
 
-        // ── SSO buttons (decorative) ──
+        // ── SSO buttons ──
         JPanel ssoRow = new JPanel(new GridLayout(1, 2, 10, 0));
         ssoRow.setOpaque(false); ssoRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
         ssoRow.setAlignmentX(LEFT_ALIGNMENT);
-        ssoRow.add(ssoBtn("G  Sign in with Google"));
-        ssoRow.add(ssoBtn("  Sign in with Apple"));
-        p.add(ssoRow); p.add(Box.createVerticalStrut(16));
+        JButton googleBtn = ssoBtn("G  Sign in with Google");
+        JButton appleBtn = ssoBtn("  Sign in with Apple");
+
+        googleBtn.addActionListener(e -> {
+            emailField.setText("rahul@example.com");
+            passField.setText("password123");
+            errorLabel.setText("Signed in with Google (Demo). Click 'Sign In' to proceed.");
+            errorLabel.setForeground(C_SEC);
+        });
+        appleBtn.addActionListener(e -> {
+            emailField.setText("adithya@example.com");
+            passField.setText("password123");
+            errorLabel.setText("Signed in with Apple ID (Demo). Click 'Sign In' to proceed.");
+            errorLabel.setForeground(C_SEC);
+        });
+
+        ssoRow.add(googleBtn);
+        ssoRow.add(appleBtn);
+        p.add(ssoRow); p.add(Box.createVerticalStrut(14));
 
         // ── Divider ──
-        p.add(divider("or sign in with email / phone")); p.add(Box.createVerticalStrut(16));
+        p.add(divider("or sign in with email / phone")); p.add(Box.createVerticalStrut(12));
+
+        // ── Quick demo auto-fill bar ──
+        JPanel demoBox = new JPanel(new BorderLayout(8, 0));
+        demoBox.setBackground(C_SURF_LOW);
+        demoBox.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(C_OUTL_V, 1, true),
+                BorderFactory.createEmptyBorder(6, 12, 6, 8)
+        ));
+        demoBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
+        demoBox.setAlignmentX(LEFT_ALIGNMENT);
+        JLabel demoInfo = new JLabel("💡 Demo Account: rahul@example.com / password123");
+        demoInfo.setFont(F_SMALL);
+        demoInfo.setForeground(C_MUTED);
+        JButton autoFillBtn = new JButton("1-Click Fill");
+        autoFillBtn.setFont(F_MICRO);
+        autoFillBtn.setBackground(C_SEC_FIX);
+        autoFillBtn.setForeground(new Color(0x00, 0x21, 0x14));
+        autoFillBtn.setFocusPainted(false);
+        autoFillBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        autoFillBtn.addActionListener(ev -> {
+            emailField.setText("rahul@example.com");
+            passField.setText("password123");
+            errorLabel.setText("Demo credentials filled! Press Enter or click Sign In.");
+            errorLabel.setForeground(C_SEC);
+        });
+        demoBox.add(demoInfo, BorderLayout.CENTER);
+        demoBox.add(autoFillBtn, BorderLayout.EAST);
+        p.add(demoBox); p.add(Box.createVerticalStrut(12));
 
         // ── Error label ──
         errorLabel.setFont(F_SMALL); errorLabel.setForeground(C_ERR);
@@ -329,14 +368,14 @@ public class LoginPage extends JFrame {
         p.add(errorLabel); p.add(Box.createVerticalStrut(4));
 
         // ── Email field ──
-        p.add(fieldLabel("Email address or Mobile Number")); p.add(Box.createVerticalStrut(5));
+        p.add(fieldLabel("Email address or 10-digit Mobile Number")); p.add(Box.createVerticalStrut(5));
         emailField.setFont(F_BODY); emailField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
         emailField.setBackground(C_SURF_LOW); emailField.setForeground(C_TEXT);
         emailField.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(C_OUTL_V, 1, true),
                 BorderFactory.createEmptyBorder(6, 12, 6, 12)));
         emailField.setAlignmentX(LEFT_ALIGNMENT);
-        emailField.putClientProperty("JTextField.placeholderText", "e.g. rahul.sharma@example.com");
+        emailField.putClientProperty("JTextField.placeholderText", "e.g. rahul@example.com or 9876543210");
         p.add(emailField); p.add(Box.createVerticalStrut(14));
 
         // ── Password field with show/hide ──
@@ -346,6 +385,14 @@ public class LoginPage extends JFrame {
         JLabel pwLbl = fieldLabel("Password"); pwLbl.setAlignmentX(LEFT_ALIGNMENT);
         JLabel forgotLbl = new JLabel("<html><a href='#' style='color:#ab2e16;'>Forgot password?</a></html>");
         forgotLbl.setFont(F_LABEL); forgotLbl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        forgotLbl.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                JOptionPane.showMessageDialog(LoginPage.this,
+                        "A password reset link and 6-digit OTP has been sent to your registered contact.\nDefault demo password: password123",
+                        "MealFlow Password Reset", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
         pwRow.add(pwLbl, BorderLayout.WEST); pwRow.add(forgotLbl, BorderLayout.EAST);
         p.add(pwRow); p.add(Box.createVerticalStrut(5));
 
@@ -426,24 +473,25 @@ public class LoginPage extends JFrame {
     }
 
     // ════════════════════════════════════════════════════════════════════════
-    // AUTH LOGIC  (unchanged from original)
+    // AUTH LOGIC
     // ════════════════════════════════════════════════════════════════════════
     private void doLogin() {
+        errorLabel.setForeground(C_ERR);
         errorLabel.setText(" ");
-        String email = emailField.getText().trim();
-        String pw    = new String(passField.getPassword());
+        String identifier = emailField.getText().trim();
+        String pw         = new String(passField.getPassword());
 
-        if (!AuthValidator.isNotEmpty(email) || !AuthValidator.isNotEmpty(pw)) {
+        if (!AuthValidator.isNotEmpty(identifier) || !AuthValidator.isNotEmpty(pw)) {
             errorLabel.setText("Please fill in both fields.");
             return;
         }
-        if (!AuthValidator.isValidEmail(email)) {
-            errorLabel.setText("Invalid email format.");
+        if (!AuthValidator.isValidEmailOrPhone(identifier)) {
+            errorLabel.setText("Please enter a valid email or 10-digit mobile number.");
             return;
         }
-        Customer c = AuthService.login(email, pw);
+        Customer c = AuthService.login(identifier, pw);
         if (c == null) {
-            errorLabel.setText("Wrong email or password. Please try again.");
+            errorLabel.setText("Invalid credentials. Try rahul@example.com / password123");
             passField.setText("");
         } else {
             new HomePage(c.getName()).setVisible(true);

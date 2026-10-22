@@ -91,6 +91,10 @@ public class ExplorePage extends JFrame {
     private List<Kitchen> allKitchens = new ArrayList<>();
     private List<ScheduleItem> scheduleItems = new ArrayList<>();
 
+    public ExplorePage() {
+        this("Guest");
+    }
+
     public ExplorePage(String customerName) {
         this.customerName = (customerName != null && !customerName.trim().isEmpty())
                 ? customerName.trim()
@@ -314,10 +318,6 @@ public class ExplorePage extends JFrame {
             dispose();
         });
 
-        // Weekly Schedule
-        JButton scheduleBtn = createNavButton("Weekly Schedule", "calendar_today", false);
-        scheduleBtn.addActionListener(e -> showWeeklyScheduleDialog());
-
         // My Orders (Person 5 hook)
         JButton myOrdersBtn = createNavButton("My Orders", "receipt_long", false);
         myOrdersBtn.addActionListener(e -> {
@@ -338,7 +338,6 @@ public class ExplorePage extends JFrame {
 
         navList.add(exploreBtn);
         navList.add(mealPlansBtn);
-        navList.add(scheduleBtn);
         navList.add(myOrdersBtn);
         navList.add(subsBtn);
         navList.add(profileBtn);
@@ -636,11 +635,7 @@ public class ExplorePage extends JFrame {
         content.add(createPopularDishesSection());
         content.add(Box.createVerticalStrut(32));
 
-        // 5. Recommended for Your Schedule (Sub-Section)
-        content.add(createScheduleRecommendationsSection());
-        content.add(Box.createVerticalStrut(32));
-
-        // 6. Featured Neighborhood Kitchens
+        // 5. Featured Neighborhood Kitchens
         content.add(createFeaturedKitchensSection());
 
         return content;
@@ -690,7 +685,7 @@ public class ExplorePage extends JFrame {
         left.add(title);
         left.add(Box.createVerticalStrut(4));
 
-        JLabel subtitle = new JLabel("Explore fresh neighborhood kitchens or schedule wholesome weekly subscriptions.");
+        JLabel subtitle = new JLabel("Explore fresh neighborhood kitchens or wholesome curated meal plans.");
         subtitle.setFont(new Font(FONT_NAME, Font.PLAIN, 13));
         subtitle.setForeground(COLOR_TEXT_MUTED);
         subtitle.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -1366,6 +1361,13 @@ public class ExplorePage extends JFrame {
 
             // 1. Image Banner with Overlaid Badges
             JPanel banner = createBanner();
+            banner.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            banner.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    new MealPricingDetailsPage(customerName).setVisible(true);
+                }
+            });
             add(banner, BorderLayout.NORTH);
 
             // 2. Info Body
@@ -1393,6 +1395,13 @@ public class ExplorePage extends JFrame {
             JLabel titleLbl = new JLabel(dish.name);
             titleLbl.setFont(new Font(FONT_NAME, Font.BOLD, 14));
             titleLbl.setForeground(COLOR_TEXT_ON_SURFACE);
+            titleLbl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            titleLbl.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    new MealPricingDetailsPage(customerName).setVisible(true);
+                }
+            });
             body.add(titleLbl);
             body.add(Box.createVerticalStrut(6));
 
@@ -1453,11 +1462,10 @@ public class ExplorePage extends JFrame {
                     Graphics2D g2 = (Graphics2D) g.create();
                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                    BufferedImage img = imageCache.get(dish.imageUrl);
+                    BufferedImage img = com.foodapp.util.ImageLoader.getImage(dish.imageUrl, getWidth(), getHeight());
                     if (img != null) {
                         g2.drawImage(img, 0, 0, getWidth(), getHeight(), null);
                     } else {
-                        // Soft modern gradient placeholder while loading
                         GradientPaint gp = new GradientPaint(0, 0, new Color(0xE7, 0xF2, 0xEA), getWidth(), getHeight(), new Color(0xDC, 0xE9, 0xDF));
                         g2.setPaint(gp);
                         g2.fillRect(0, 0, getWidth(), getHeight());
@@ -1737,7 +1745,7 @@ public class ExplorePage extends JFrame {
             Shape clip = new RoundRectangle2D.Float(0, 0, width, height, arc, arc);
             g2.setClip(clip);
 
-            BufferedImage img = imageCache.get(url);
+            BufferedImage img = com.foodapp.util.ImageLoader.getImage(url, width, height);
             if (img != null) {
                 g2.drawImage(img, 0, 0, width, height, null);
             } else {

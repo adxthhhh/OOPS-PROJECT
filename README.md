@@ -2,6 +2,8 @@
 
 A modern Java Swing desktop application developed for the APJKTU 2024 Scheme, B.Tech CSE Semester 3 OOP Course.
 
+> 📖 **Comprehensive Documentation:** For the complete academic project manual, OOP architectural deep-dive, 3NF database schema, test coverage reports, and class diagrams, refer to [DOCUMENTATION.md](file:///home/adith/Documents/OOPS%20PROJECT/DOCUMENTATION.md).
+
 ## Team Assignments & Module Status
 
 | Person | Module | Status | Package |

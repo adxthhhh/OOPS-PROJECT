@@ -10,6 +10,9 @@ public class AuthValidator {
     public static boolean isValidPassword(String pw) {
         return pw != null && pw.length() >= 6;
     }
+    public static boolean isValidEmailOrPhone(String s) {
+        return isValidEmail(s) || isValidPhone(s);
+    }
     public static boolean isNotEmpty(String s) {
         return s != null && !s.trim().isEmpty();
     }

@@ -5,7 +5,7 @@ import javax.swing.*;
 /**
  * HomePage - The main dashboard for customers after authentication.
  * Extends {@link ExplorePage} to present the modern MealFlow Explore interface,
- * neighborhood kitchens, personalized schedule recommendations, and meal plans.
+ * neighborhood kitchens, popular chef dishes, and meal plans.
  */
 public class HomePage extends ExplorePage {
 
